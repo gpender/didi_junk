@@ -1,0 +1,34 @@
+﻿<UserControl x:Class="DidiWebSocketTest.Views.WsScopeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:messages="clr-namespace:DidiWebSocketTest.Models.Messages"
+             xmlns:local="clr-namespace:DidiWebSocketTest.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <!--<Button Content="Open" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="button_Click"/>-->
+            <Button Content="Close" Command="{Binding CloseCommand}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75"/>
+            <Button Content="Get Scope Params" Command="{Binding SendMessageCommand}" CommandParameter="{x:Static messages:MessageType.GET_SCOPE_PARAMS}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="Auto"/>
+            <Button Content="Get Config Params" Command="{Binding SendMessageCommand}" CommandParameter="{x:Static messages:MessageType.CONFIG_PARAMS}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="Auto"/>
+            <Button Content="Get Config Params" Command="{Binding SendMessageCommand}" CommandParameter="{x:Static messages:MessageType.SEND_BUFFER}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="Auto"/>
+        </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="43*"/>
+                <ColumnDefinition Width="357*"/>
+                <ColumnDefinition Width="400*"/>
+            </Grid.ColumnDefinitions>
+            <ScrollViewer Grid.ColumnSpan="2">
+                <TextBlock  x:Name="textBlock" TextWrapping="Wrap" Text="{Binding Message}"/>
+            </ScrollViewer>
+            <Image Grid.Column="2" Source="{Binding Image}"></Image>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,26 @@
+﻿<Window x:Class="DidiWebSocketTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:view="clr-namespace:DidiWebSocketTest.Views"
+        xmlns:local="clr-namespace:DidiWebSocketTest"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <TabControl>
+            <TabItem Header="Test Protocol">
+                <view:WsTestProtocolView DataContext="{Binding TestProtocolVM}"/>
+            </TabItem>
+            <TabItem Header="Scope Protocol">
+                <view:WsScopeView DataContext="{Binding ScopeProtocolVM}"/>
+            </TabItem>
+            <TabItem Header="Scope">
+                <view:ScopeUC DataContext="{Binding ScopeVM}"/>
+            </TabItem>
+            <TabItem Header="Scope">
+                <view:ScopeNoViewModelUC/>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
