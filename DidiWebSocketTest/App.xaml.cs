@@ -46,7 +46,8 @@ namespace DidiWebSocketTest
         private static UnityContainerProvider instance = null;
         private static readonly object padlock = new object();
         IUnityContainer container;
-        string ipAddress = "169.254.3.17";
+        //string ipAddress = "169.254.3.17";
+        string ipAddress = "192.168.2.31";
         UnityContainerProvider() { }
         public static UnityContainerProvider Instance
         {

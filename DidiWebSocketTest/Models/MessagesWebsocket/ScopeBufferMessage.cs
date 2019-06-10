@@ -14,7 +14,6 @@ namespace DidiWebSocketTest.Models.Messages
         public int SampleCount { get; set; }
         public float[] Data { get; set; }
         public float[] Time { get; set; }
-        public List<Entry> Entries { get; set; } = new List<Entry>();
         public ScopeBufferMessage(byte[] frame) : base(frame)
         {
             byte[] data = frame.Skip(frame[0]).ToArray();
@@ -22,13 +21,13 @@ namespace DidiWebSocketTest.Models.Messages
             if (header[2] == 0x02)
             {
                 ScopeFullBufferDataStructure ds = BytesToStruct<ScopeFullBufferDataStructure>(ref data, data.Length);
-                Data = ds.data;
-                for (int i = 0; i < ds.data.Length; i = i + ChannelCount + 1)
-                {
-                    Entry entry = new Entry() { Time = ds.data[i], Data = ds.data.Take(ChannelCount).ToArray() };
-                    Entries.Add(entry);
-                }
-                Entries.Sort();
+                int arraySize = (ChannelCount + 1) * (ds.data.Length / (ChannelCount + 1));
+                var dataArray = ds.data.Take(arraySize).ToArray();
+                var tmp = dataArray.Where((x, i) => i % (ChannelCount + 1) == 0).ToArray();
+                var max = tmp.Min();
+                var index = Array.IndexOf(tmp,max);
+                Data = dataArray.Skip(index * (ChannelCount + 1)).ToArray();
+                Data = Data.Concat(dataArray.Take(index * (ChannelCount + 1))).ToArray();
             }
             if (header[2] == 0x03)
             {
