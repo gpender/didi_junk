@@ -43,9 +43,20 @@
 
                 </StackPanel>
             </Border>
-
+            <ListView Visibility="Collapsed" ItemsSource="{Binding ChannelDataVMCollection[0].Data}" Grid.Column="1">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding T}" MinWidth="100"/>
+                            <TextBlock Text="{Binding YValue}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+            
+            
             <!--  Define the SciChartSurface  -->
-            <s:SciChartSurface x:Name="sciChart" RenderableSeries="{s:SeriesBinding ChannelDataVMCollection}" XAxis="{Binding XAxis}" RenderPriority="Low" ViewportManager="{Binding ViewportManager}" Grid.Column="1">
+            <s:SciChartSurface x:Name="sciChart" RenderableSeries="{s:SeriesBinding ChannelDataVMCollection}" XAxis="{Binding XAxis}" YAxes="{Binding YAxes}" RenderPriority="Low" ViewportManager="{Binding ViewportManager}" Grid.Column="1">
                 <s:SciChartSurface.RenderSurface>
                     <!-- High Quality subpixel rendering -->
                     <s:HighQualityRenderSurface/>
@@ -101,9 +112,9 @@
                     </s:NumericAxis.GrowBy>
                 </s:NumericAxis>
             </s:SciChartSurface.YAxes>-->
-                <s:SciChartSurface.YAxis>
+                <!--<s:SciChartSurface.YAxis>
                     <s:NumericAxis AxisTitle="{Binding YAxisTitle}"/>
-                </s:SciChartSurface.YAxis>
+                </s:SciChartSurface.YAxis>-->
             </s:SciChartSurface>
         </Grid>
         <ScrollViewer Grid.Row="1">

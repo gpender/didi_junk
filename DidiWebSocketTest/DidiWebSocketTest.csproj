@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -90,17 +91,18 @@
     <Compile Include="Interfaces\IUtilityServices.cs" />
     <Compile Include="Interfaces\IProtocol.cs" />
     <Compile Include="Interfaces\ITransport.cs" />
-    <Compile Include="Models\Messages\ImageMessage.cs" />
-    <Compile Include="Models\Messages\MessageBase.cs" />
-    <Compile Include="Models\Messages\MessageTypeEnum.cs" />
-    <Compile Include="Models\Messages\ScopeBufferMessage.cs" />
-    <Compile Include="Models\Messages\HelloMessage.cs" />
-    <Compile Include="Models\Messages\ScopeConfigMessage.cs" />
-    <Compile Include="Models\Messages\ScopeParametersMessage.cs" />
-    <Compile Include="Models\ScopeProtocol.cs" />
-    <Compile Include="Models\TestProtocol.cs" />
+    <Compile Include="Models\MessagesWebsocket\ImageMessage.cs" />
+    <Compile Include="Models\MessagesWebsocket\MessageBase.cs" />
+    <Compile Include="Models\MessagesWebsocket\MessageTypeEnum.cs" />
+    <Compile Include="Models\MessagesWebsocket\ScopeBufferMessage.cs" />
+    <Compile Include="Models\MessagesWebsocket\HelloMessage.cs" />
+    <Compile Include="Models\MessagesWebsocket\ScopeConfigMessage.cs" />
+    <Compile Include="Models\MessagesWebsocket\ScopeParametersMessage.cs" />
+    <Compile Include="Models\Scope.cs" />
+    <Compile Include="Models\Protocols\ScopeProtocol.cs" />
+    <Compile Include="Models\Protocols\TestProtocol.cs" />
     <Compile Include="Models\Utils\UtilityServices.cs" />
-    <Compile Include="Models\HttpTransport.cs" />
+    <Compile Include="Models\Transports\HttpTransport.cs" />
     <Compile Include="ViewModels\Command\RelayCommand.cs" />
     <Compile Include="ViewModels\MainVM.cs" />
     <Compile Include="ViewModels\BaseVM.cs" />
@@ -121,8 +123,8 @@
     <Compile Include="Views\WsTestProtocolView.xaml.cs">
       <DependentUpon>WsTestProtocolView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\Messages\WebSocketReponseMessage.cs" />
-    <Compile Include="Models\WebSocketTransport.cs" />
+    <Compile Include="Models\MessagesWebsocket\WebSocketReponseMessage.cs" />
+    <Compile Include="Models\Transports\WebSocketTransport.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -180,6 +182,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Models\MessagesHttp\" />
     <Folder Include="Models\Parameters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

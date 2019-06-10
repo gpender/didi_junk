@@ -14,6 +14,7 @@ namespace DidiWebSocketTest.Interfaces
 
         event EventHandler<MessageBase> OnMessage;
         void SendMessage(MessageBase message);
+        void Connect();
         void Close();
     }
 }

@@ -88,7 +88,7 @@ namespace DidiWebSocketTest.Models.Messages
                 throw new Exception("Incorrect Data length in Message");
             }
             T result = default(T);
-            RespectEndianness(typeof(T), rawData);
+            //RespectEndianness(typeof(T), rawData);
             GCHandle handle = GCHandle.Alloc(rawData, GCHandleType.Pinned);
             IntPtr rawDataPtr = IntPtr.Zero;
             try

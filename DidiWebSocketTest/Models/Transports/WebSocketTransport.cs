@@ -12,16 +12,11 @@ namespace DidiWebSocketTest.Models
         public event EventHandler<string> OnError;
         WebSocket ws = null;
 
-        public WebSocketTransport()
-        {
-
-        }
-
+        public WebSocketTransport() { }
         public void Close()
         {
             if (ws != null) ws.Close();
         }
-
         public void Connect(IProtocol protocol)
         {
             if (ws != null && ws.ReadyState == WebSocketState.Open) return;
@@ -36,7 +31,6 @@ namespace DidiWebSocketTest.Models
         {
             OnError?.Invoke(sender, e.Message);
         }
-
         private void Ws_OnMessage(object sender, MessageEventArgs e)
         {
             if (e.IsBinary)
@@ -48,7 +42,6 @@ namespace DidiWebSocketTest.Models
                 OnInfo?.Invoke(sender, e.Data);
             }
         }
-
         private void Ws_OnClose(object sender, CloseEventArgs e)
         {
             OnInfo?.Invoke(sender, "WebSocket Closed");
@@ -56,6 +49,7 @@ namespace DidiWebSocketTest.Models
             ws.OnClose -= Ws_OnClose;
             ws.OnMessage -= Ws_OnMessage;
             ws.OnError -= Ws_OnError;
+            ws = null;
         }
 
         private void Ws_OnOpen(object sender, EventArgs e)
@@ -64,7 +58,14 @@ namespace DidiWebSocketTest.Models
         }
         public void SendMessage(MessageBase message)
         {
-            if (ws != null) ws.Send(message.MessageBytes);
+            if (ws != null && ws.ReadyState == WebSocketState.Open)
+            {
+                ws.Send(message.MessageBytes);
+            }
+            else
+            {
+                OnInfo?.Invoke(this, "Cannot send message, WebSocket not Open");
+            }
         }
     }
 }

@@ -82,7 +82,7 @@ namespace DidiWebSocketTest.ViewModels
         }
         void Close()
         {
-            protocol.Close();
+            protocol.Connect();
         }
 
         bool CanClose()

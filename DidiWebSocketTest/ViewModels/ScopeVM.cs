@@ -9,11 +9,13 @@ using SciChart.Charting.Visuals.Axes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Timers;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace DidiWebSocketTest.ViewModels
 {
@@ -23,7 +25,7 @@ namespace DidiWebSocketTest.ViewModels
         string message ="";
         RelayCommand<ScopeCommandName> scopeCommand;
         AxisCollection yAxes = new AxisCollection();
-        TimeSpanAxis xAxis = new TimeSpanAxis();
+        TimeSpanAxis xAxis = new TimeSpanAxis() { AutoRange = AutoRange.Always };
         ObservableCollection<ChannelDataVM> channelDataVMCollection = new ObservableCollection<ChannelDataVM>();
         public ObservableCollection<ChannelDataVM> ChannelDataVMCollection { get { return channelDataVMCollection; } }
         public int ChannelCount { get; set; }
@@ -57,10 +59,6 @@ namespace DidiWebSocketTest.ViewModels
             this.protocol.OnError += Protocol_OnInfo;
             this.protocol.OnInfo += Protocol_OnInfo;
             ViewportManager = new DefaultViewportManager();
-
-            _timerNewDataUpdate = new Timer(dt * 1000);
-            _timerNewDataUpdate.AutoReset = true;
-            _timerNewDataUpdate.Elapsed += OnNewData;
             CreateDataSetAndSeries();
         }
 
@@ -68,86 +66,38 @@ namespace DidiWebSocketTest.ViewModels
         {
             Message = e;
         }
+        TimeSpan lastMaxTime = TimeSpan.Zero;
         private void Protocol_OnMessage(object sender, MessageBase msg)
         {
             ScopeBufferMessage scopeBufferMsg = msg as ScopeBufferMessage;
-            if (scopeBufferMsg != null)
+            if(scopeBufferMsg != null)
             {
-                //scopeBufferMsg.ChannelCount
-                List<ByteEntry> byteEntries = GetTimeStampedValues(scopeBufferMsg.Data, 2);// scopeBufferMsg.ChannelCount);
-                int ms = (int)TimeSpan.Zero.TotalMilliseconds;
-                foreach (var be in byteEntries)
+                for(int i=0; i < scopeBufferMsg.SampleCount; i = i + scopeBufferMsg.ChannelCount + 1)
                 {
-                    int index = 0;
-                    TimeSpan ts = TimeSpan.FromMilliseconds(ms);
-                    //float y1 = (float)(3.0 * Math.Sin(((2 * Math.PI) * 1.4) * ms) + _random.NextDouble() * 0.5);
-                    //float y2 = (float)(2.0 * Math.Cos(((2 * Math.PI) * 0.8) * ms) + _random.NextDouble() * 0.5);
-                    //((XyDataSeries<TimeSpan, float>)ChannelDataVMCollection[0].DataSeries).Append(ts, y1);
-                    //((XyDataSeries<TimeSpan, float>)ChannelDataVMCollection[1].DataSeries).Append(ts, y2);
-                    foreach (var d in be.Values)
+                    TimeSpan ts = TimeSpan.Zero;
+                    try { ts = TimeSpan.FromSeconds(scopeBufferMsg.Data[i]); }catch { }
+                    lastMaxTime = ts.Ticks > lastMaxTime.Ticks ? ts : lastMaxTime;
+                    for(int j = 1; j <= scopeBufferMsg.ChannelCount; j++)
                     {
-
-                        ((XyDataSeries<TimeSpan, float>)ChannelDataVMCollection[index].DataSeries).Append(be.TimeStamp, d);
-                        //((IXyDataSeries<double, double>)ChannelDataVMCollection[index].DataSeries).Append(be.TimeStamp.Ticks, d);
-                        index++;
+                        float val = ts!=TimeSpan.Zero ? scopeBufferMsg.Data[i + j] : float.NaN;
+                        ((XyDataSeries<TimeSpan, float>)ChannelDataVMCollection[j-1].DataSeries).Append(ts,val);
+                        if(i==0)AddNullData(ChannelDataVMCollection[j - 1].DataSeries);
                     }
-                    ms++;
                 }
-                //// Compute our three series values
-                //double y1 = 3.0 * Math.Sin(((2 * Math.PI) * 1.4) * t) + _random.NextDouble() * 0.5;
-                //double y2 = 2.0 * Math.Cos(((2 * Math.PI) * 0.8) * t) + _random.NextDouble() * 0.5;
-                //double y3 = 1.0 * Math.Sin(((2 * Math.PI) * 2.2) * t) + _random.NextDouble() * 0.5;
-
-                //// Suspending updates is optional, and ensures we only get one redraw
-                //// once all three dataseries have been appended to
-                ////using (sciChart.SuspendUpdates())
-                //{
-                //    // Append x,y data to previously created series
-                //    series0.Append(t, y1);
-                //    series1.Append(t, y2);
-                //    series2.Append(t, y3);
-                //}
-
-                //// Increment current time
-                //t += dt;
-
+                Message = $"{DateTime.Now.ToLongTimeString()} Data received";
             }
-            Message = $"{DateTime.Now.ToLongTimeString()} Data received";
         }
-        private List<ByteEntry> GetTimeStampedValues(float[] bytes, int numberOfChannels)
+        internal void AddNullData(IDataSeries dataSeries)
         {
-            List<ByteEntry> entries = new List<ByteEntry>();
-            int entrySize = 1 + numberOfChannels;// 4 + ((int)numberOfChannels * 4);
-            int numEntries = Convert.ToInt32(bytes.Length / entrySize);
-            int index = 0;
-            int offset = 0;
-            while (index < numEntries)
+            int count = dataSeries.XValues.Count;
+            if (count > 0)
             {
-                //float time = bytes[offset];// (long)(GetSingle(bytes, offset));
-                long ticks = (long)(bytes[offset] * 10000000); // long.Parse(time.ToString());
-                if (ticks < 0) ticks = 0;
-                if (ticks > TimeSpan.MaxValue.Ticks) ticks = TimeSpan.MaxValue.Ticks;
-                ByteEntry be = new ByteEntry(TimeSpan.FromTicks(ticks));
-                List<byte> tmp = new List<byte>();
-                for (int j = 1; j <= numberOfChannels; j++)
-                {
-                    float val = bytes[offset + j];// GetSingle(bytes, offset + (j * 4));
-                    //if (((IScopeChannel2)CurrentScopeChannels[j - 1]).ParameterType == "16")
-                    //{
-                    //    val = val / 1000;
-                    //}
-                    be.Values.Add(val);
-                }
-                entries.Add(be);
-                offset = offset + entrySize;
-                index++;
+                TimeSpan lastTimeValue = (TimeSpan)dataSeries.XValues[count - 1];
+                lastTimeValue.Add(new TimeSpan(1));
+                ((XyDataSeries<TimeSpan, float>)dataSeries).Append(lastTimeValue, float.NaN);
             }
-            //if (SingleCapture)
-            //{
-            //    entries.Sort();
-            //}
-            return entries;
         }
+
         internal class ByteEntry : IComparable, ICloneable
         {
             public TimeSpan TimeStamp { get; set; }
@@ -281,14 +231,14 @@ namespace DidiWebSocketTest.ViewModels
 
             ChannelDataVMCollection.Add(new ChannelDataVM(0)
             {
-                StrokeThickness = 2,
-                Stroke = Colors.SteelBlue,
+                //StrokeThickness = 1,
+                //Stroke = Colors.SteelBlue,
                 DataSeries = series0
             });
             ChannelDataVMCollection.Add(new ChannelDataVM(1)
             {
-                StrokeThickness = 2,
-                Stroke = Colors.SteelBlue,
+                //StrokeThickness = 1,
+                //Stroke = Colors.SteelBlue,
                 DataSeries = series1
             });
 
@@ -300,26 +250,6 @@ namespace DidiWebSocketTest.ViewModels
             YAxes.Add(ChannelDataVMCollection[0].YAxis);
             YAxes.Add(ChannelDataVMCollection[1].YAxis);
 
-        }
-        private void OnNewData(object sender, EventArgs e)
-        {
-            //// Compute our three series values
-            //double y1 = 3.0 * Math.Sin(((2 * Math.PI) * 1.4) * t) + _random.NextDouble() * 0.5;
-            //double y2 = 2.0 * Math.Cos(((2 * Math.PI) * 0.8) * t) + _random.NextDouble() * 0.5;
-            //double y3 = 1.0 * Math.Sin(((2 * Math.PI) * 2.2) * t) + _random.NextDouble() * 0.5;
-
-            //// Suspending updates is optional, and ensures we only get one redraw
-            //// once all three dataseries have been appended to
-            ////using (sciChart.SuspendUpdates())
-            //{
-            //    // Append x,y data to previously created series
-            //    series0.Append(t, y1);
-            //    series1.Append(t, y2);
-            //    series2.Append(t, y3);
-            //}
-
-            //// Increment current time
-            //t += dt;
         }
         private void ClearDataSeries()
         {
@@ -362,7 +292,6 @@ namespace DidiWebSocketTest.ViewModels
                     break;
                 case ScopeCommandName.STOP:
                     //protocol.GetScopeConfigParameters();// SendMessage();
-                    //protocol.Close();
                     protocol.Close();
                     //_timerNewDataUpdate.Stop();
 
@@ -375,5 +304,19 @@ namespace DidiWebSocketTest.ViewModels
             }
         }
         #endregion
+
+
+
+        private void SendGetData()
+        {
+            string driveDisk = "z";
+            string ipAddress = "169.254.3.17";
+            int tag = 464;
+            string trueString = "1";
+            string falseString = "0";
+            string SET_PARAMETER_VALUE = $"http://{ipAddress}:8080/{driveDisk}:/restricted/parameters.act?V{tag.ToString()}={trueString}";
+
+
+        }
     }
 }

@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace DidiWebSocketTest.Models
 {
-    public class ScopeProtocol : IProtocol
+    public class TestProtocol : IProtocol
     {
         public event EventHandler<MessageBase> OnMessage;
         public event EventHandler<string> OnInfo;
         public event EventHandler<string> OnError;
         ITransport transport;
         string ipAddress;
-        public string Protocol { get { return "scope"; } }
+        public string Protocol { get { return "test"; } }
         public string Url { get { return $"ws://{ipAddress}/chat"; } }
-        public ScopeProtocol(ITransport transport, string ipAddress)
+        public TestProtocol(ITransport transport, string ipAddress)
         {
             this.transport = transport;
             this.transport.OnMessage += Transport_OnMessage;
@@ -25,7 +25,6 @@ namespace DidiWebSocketTest.Models
             this.transport.OnInfo += Transport_OnInfo;
             this.ipAddress = ipAddress;
         }
-
         private void Transport_OnInfo(object sender, string info)
         {
             OnInfo?.Invoke(this, info);
@@ -34,47 +33,27 @@ namespace DidiWebSocketTest.Models
         {
             OnError?.Invoke(sender, err);
         }
-        private readonly object messageLock = new object();
-
-        private void Transport_OnMessage(object sender, byte[] frame)
+        private void Transport_OnMessage(object sender, byte[] msg)
         {
-            lock (messageLock)
+            if(msg.Length > 100)
             {
-                MessageBase msg = null;
-                if (frame[2] == 0x00)
-                {
-                    msg = new ScopeParametersMessage(frame);
-                }
-                if (frame[2] == 0x01)
-                {
-                    msg = new ScopeConfigMessage(frame);
-                }
-                if (frame[2] == 0x02)
-                {
-                    msg = new ScopeBufferMessage(frame);
-                }
-                OnMessage?.Invoke(sender, msg);
+                OnMessage?.Invoke(sender, new ImageMessage(msg));
+            }
+            else
+            {
+                OnMessage?.Invoke(sender, new HelloMessage(msg));
             }
         }
         public void SendMessage(MessageBase message)
         {
             transport.Connect(this);
-            //transport.SendMessage(message);
+            transport.SendMessage(message);
         }
-        public void GetScopeParameters()
-        {
-            transport.Connect(this);
-            transport.SendMessage(new ScopeParametersMessage());
-        }
-        public void GetScopeConfigParameters()
-        {
-            transport.Connect(this);
-            transport.SendMessage(new ScopeConfigMessage());
-        }
-        public void GetScopeBuffer()
+        public void Connect()
         {
             transport.Connect(this);
         }
+
         public void Close()
         {
             transport.Close();
