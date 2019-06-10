@@ -72,16 +72,22 @@ namespace DidiWebSocketTest.ViewModels
             ScopeBufferMessage scopeBufferMsg = msg as ScopeBufferMessage;
             if(scopeBufferMsg != null)
             {
+                //foreach(var entry in scopeBufferMsg.Entries)
+                //{
+                //    for (int j = 0; j < scopeBufferMsg.ChannelCount; j++)
+                //    {
+                //        ((XyDataSeries<TimeSpan, float>)ChannelDataVMCollection[j].DataSeries).Append(TimeSpan.FromSeconds(entry.Time), entry.Data[j]);
+                //    }
+                //}
                 for(int i=0; i < scopeBufferMsg.SampleCount; i = i + scopeBufferMsg.ChannelCount + 1)
                 {
-                    TimeSpan ts = TimeSpan.Zero;
-                    try { ts = TimeSpan.FromSeconds(scopeBufferMsg.Data[i]); }catch { }
+                    TimeSpan ts = TimeSpan.FromSeconds(scopeBufferMsg.Data[i]);
                     lastMaxTime = ts.Ticks > lastMaxTime.Ticks ? ts : lastMaxTime;
-                    for(int j = 1; j <= scopeBufferMsg.ChannelCount; j++)
+                    for (int j = 1; j <= scopeBufferMsg.ChannelCount; j++)
                     {
-                        float val = ts!=TimeSpan.Zero ? scopeBufferMsg.Data[i + j] : float.NaN;
-                        ((XyDataSeries<TimeSpan, float>)ChannelDataVMCollection[j-1].DataSeries).Append(ts,val);
-                        if(i==0)AddNullData(ChannelDataVMCollection[j - 1].DataSeries);
+                        float val = scopeBufferMsg.Data[i + j];
+                        ((XyDataSeries<TimeSpan, float>)ChannelDataVMCollection[j - 1].DataSeries).Append(ts, val);
+                        if (i == 0) AddNullData(ChannelDataVMCollection[j - 1].DataSeries);
                     }
                 }
                 Message = $"{DateTime.Now.ToLongTimeString()} Data received";
