@@ -1,6 +1,6 @@
 ﻿namespace DidiWebSocketTest.Models.Messages
 {
-    public class ImageMessage : MessageBase
+    public class ImageMessage : WebSocketMessageBase
     {
         public ImageMessage()
         {

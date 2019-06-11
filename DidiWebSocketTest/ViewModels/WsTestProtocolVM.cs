@@ -47,11 +47,11 @@ namespace DidiWebSocketTest.ViewModels
             Message = e;
         }
 
-        private void Protocol_OnMessage(object sender, MessageBase msg)
+        private void Protocol_OnMessage(object sender, IMessage msg)
         {
             if(msg is HelloMessage)
             {
-                Message = msg.Message;
+                Message = ((HelloMessage)msg).Message;
             }
             if(msg is ImageMessage)
             {

@@ -1,59 +1,53 @@
 ﻿using DidiWebSocketTest.Interfaces;
 using DidiWebSocketTest.Models.Messages;
+using DidiWebSocketTest.Models.MessagesHttp;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DidiWebSocketTest.Models
 {
-    public class TestProtocol : IProtocol
+    public class DriveHttpProtocol : IProtocol
     {
         public event EventHandler<IMessage> OnMessage;
         public event EventHandler<string> OnInfo;
         public event EventHandler<string> OnError;
         ITransport transport;
         string ipAddress;
-        public string Protocol { get { return "test"; } }
-        public string Url { get { return $"ws://{ipAddress}/chat"; } }
-        public TestProtocol(ITransport transport, string ipAddress)
+        public string Protocol { get { return "parameter"; } }
+        public string Url { get { return $"http://{ipAddress}/"; } }
+        public DriveHttpProtocol(ITransport transport, string ipAddress)
         {
             this.transport = transport;
             this.transport.OnMessage += Transport_OnMessage;
-            this.transport.OnError += Transport_OnError;
+            this.transport.OnError += Transport_OnInfo;
             this.transport.OnInfo += Transport_OnInfo;
             this.ipAddress = ipAddress;
         }
+
         private void Transport_OnInfo(object sender, string info)
         {
             OnInfo?.Invoke(this, info);
         }
-        private void Transport_OnError(object sender, string err)
+        private void Transport_OnMessage(object sender, byte[] frame)
         {
-            OnError?.Invoke(sender, err);
-        }
-        private void Transport_OnMessage(object sender, byte[] msg)
-        {
-            if(msg.Length > 100)
-            {
-                OnMessage?.Invoke(sender, new ImageMessage(msg));
-            }
-            else
-            {
-                OnMessage?.Invoke(sender, new HelloMessage(msg));
-            }
         }
         public void SendMessage(IMessage message)
         {
-            transport.Connect(this);
             transport.SendMessage(message);
+        }
+        public void GetMenus()
+        {
+            MenusMessage message = new MenusMessage(ipAddress);
+            transport.SendRequestResponseMessage(message);
+        }
+        public void GetParameterAttributes(int tag)
+        {
+            ParameterAttributesMessage message = new ParameterAttributesMessage(ipAddress, tag);
+            transport.SendRequestResponseMessage(message);
         }
         public void Connect()
         {
             transport.Connect(this);
         }
-
         public void Close()
         {
             transport.Close();

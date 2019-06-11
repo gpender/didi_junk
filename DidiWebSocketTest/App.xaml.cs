@@ -46,8 +46,8 @@ namespace DidiWebSocketTest
         private static UnityContainerProvider instance = null;
         private static readonly object padlock = new object();
         IUnityContainer container;
-        //string ipAddress = "169.254.3.17";
-        string ipAddress = "192.168.2.31";
+        string ipAddress = "169.254.3.17";
+        //string ipAddress = "192.168.2.31";
         UnityContainerProvider() { }
         public static UnityContainerProvider Instance
         {
@@ -70,7 +70,12 @@ namespace DidiWebSocketTest
                 container = new UnityContainer();
                 container.RegisterType<IProtocol, TestProtocol>(new ContainerControlledLifetimeManager(), new InjectionConstructor(new object[] { new WebSocketTransport(), ipAddress }));
                 container.RegisterType<IProtocol, ScopeProtocol>(new ContainerControlledLifetimeManager(), new InjectionConstructor(new object[] { new WebSocketTransport(), ipAddress }));
-                container.RegisterType<ITransport, WebSocketTransport>(new ContainerControlledLifetimeManager());
+                container.RegisterType<IProtocol, DriveHttpProtocol>(new ContainerControlledLifetimeManager(), new InjectionConstructor(new object[] { new HttpTransport(), ipAddress }));
+
+                container.RegisterType<ITransport, WebSocketTransport>("WebSocketTransport", new ContainerControlledLifetimeManager());
+                container.RegisterType<ITransport, HttpTransport>("HttpTransport", new ContainerControlledLifetimeManager());
+
+                container.RegisterType<IScope, Scope>(new ContainerControlledLifetimeManager());
                 container.RegisterType<IUtilityServices, UtilityServices>(new ContainerControlledLifetimeManager());
                 container.RegisterType<WsScopeProtocolVM>();
                 container.RegisterType<ScopeVM>();

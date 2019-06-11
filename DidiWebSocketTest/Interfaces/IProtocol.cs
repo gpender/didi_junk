@@ -12,8 +12,8 @@ namespace DidiWebSocketTest.Interfaces
         string Protocol { get; }
         string Url { get; }
 
-        event EventHandler<MessageBase> OnMessage;
-        void SendMessage(MessageBase message);
+        event EventHandler<IMessage> OnMessage;
+        void SendMessage(IMessage message);
         void Connect();
         void Close();
     }

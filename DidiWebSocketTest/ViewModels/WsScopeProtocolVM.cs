@@ -1,4 +1,5 @@
 ﻿using DidiWebSocketTest.Commands;
+using DidiWebSocketTest.Interfaces;
 using DidiWebSocketTest.Models;
 using DidiWebSocketTest.Models.Messages;
 using System;
@@ -34,7 +35,7 @@ namespace DidiWebSocketTest.ViewModels
             Message = e;
         }
 
-        private void Protocol_OnMessage(object sender, MessageBase msg)
+        private void Protocol_OnMessage(object sender, IMessage msg)
         {
         }
 

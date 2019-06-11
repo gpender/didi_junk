@@ -23,9 +23,10 @@
             <Border Background="#FF232426" BorderThickness="0,0,2,0" BorderBrush="#323539" Canvas.ZIndex="9999">
 
                 <StackPanel Orientation="Vertical">
-                    <ToggleButton x:Name="StartButton" Command="{Binding ScopeCommand}" CommandParameter="{x:Static vm:ScopeCommandName.START}" Padding="4" Content="1"/>
-                    <ToggleButton x:Name="PauseButton" Command="{Binding ScopeCommand}" CommandParameter="{x:Static vm:ScopeCommandName.PAUSE}" Padding="7" Content="P"/>
-                    <ToggleButton x:Name="ResetButton" Command="{Binding ScopeCommand}" CommandParameter="{x:Static vm:ScopeCommandName.STOP}" Padding="7" Content="0"/>
+                    <Button Command="{Binding ScopeCommand}" CommandParameter="{x:Static vm:ScopeCommandName.START}" Padding="4" Content="1"/>
+                    <Button Command="{Binding ScopeCommand}" CommandParameter="{x:Static vm:ScopeCommandName.PAUSE}" Padding="7" Content="P"/>
+                    <Button Command="{Binding ScopeCommand}" CommandParameter="{x:Static vm:ScopeCommandName.STOP}" Padding="7" Content="0"/>
+                    <Button Command="{Binding ScopeCommand}" CommandParameter="{x:Static vm:ScopeCommandName.GETMENUS}" Padding="7" Content="M"/>
                     <!--<ToggleButton x:Name="StartButton" Click="StartButton_Click" Style="{StaticResource PlayButtonStyle}" Padding="4"/>
                 <ToggleButton x:Name="PauseButton" Click="PauseButton_Click" Style="{StaticResource PauseButtonStyle}" Padding="7"/>
                 <ToggleButton x:Name="ResetButton" Click="ResetButton_Click" Style="{StaticResource StopButtonStyle}" Padding="7"/>

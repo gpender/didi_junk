@@ -88,16 +88,26 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Interfaces\IHttpMessage.cs" />
+    <Compile Include="Interfaces\IMessage.cs" />
     <Compile Include="Interfaces\IUtilityServices.cs" />
     <Compile Include="Interfaces\IProtocol.cs" />
     <Compile Include="Interfaces\ITransport.cs" />
+    <Compile Include="Models\IScope.cs" />
+    <Compile Include="Models\MessagesCommon\MessageBase.cs" />
+    <Compile Include="Models\MessagesHttp\ParameterSetValueMessage.cs" />
+    <Compile Include="Models\MessagesHttp\ParameterGetValueMessage.cs" />
+    <Compile Include="Models\MessagesHttp\ParameterAttributesMessage.cs" />
+    <Compile Include="Models\MessagesHttp\MenusMessage.cs" />
+    <Compile Include="Models\MessagesHttp\HttpMessageBase.cs" />
     <Compile Include="Models\MessagesWebsocket\ImageMessage.cs" />
-    <Compile Include="Models\MessagesWebsocket\MessageBase.cs" />
+    <Compile Include="Models\MessagesWebsocket\WebSocketMessageBase.cs" />
     <Compile Include="Models\MessagesWebsocket\MessageTypeEnum.cs" />
     <Compile Include="Models\MessagesWebsocket\ScopeBufferMessage.cs" />
     <Compile Include="Models\MessagesWebsocket\HelloMessage.cs" />
     <Compile Include="Models\MessagesWebsocket\ScopeConfigMessage.cs" />
     <Compile Include="Models\MessagesWebsocket\ScopeParametersMessage.cs" />
+    <Compile Include="Models\Protocols\DriveHttpProtocol.cs" />
     <Compile Include="Models\Scope.cs" />
     <Compile Include="Models\Protocols\ScopeProtocol.cs" />
     <Compile Include="Models\Protocols\TestProtocol.cs" />
@@ -123,7 +133,6 @@
     <Compile Include="Views\WsTestProtocolView.xaml.cs">
       <DependentUpon>WsTestProtocolView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Models\MessagesWebsocket\WebSocketReponseMessage.cs" />
     <Compile Include="Models\Transports\WebSocketTransport.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -182,7 +191,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\MessagesHttp\" />
     <Folder Include="Models\Parameters\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

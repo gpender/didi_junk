@@ -6,7 +6,7 @@ namespace DidiWebSocketTest.Models
 {
     public class ScopeProtocol : IProtocol
     {
-        public event EventHandler<MessageBase> OnMessage;
+        public event EventHandler<IMessage> OnMessage;
         public event EventHandler<string> OnInfo;
         public event EventHandler<string> OnError;
         ITransport transport;
@@ -32,7 +32,7 @@ namespace DidiWebSocketTest.Models
         }
         private void Transport_OnMessage(object sender, byte[] frame)
         {
-            MessageBase msg = null;
+            WebSocketMessageBase msg = null;
             if (frame[2] == 0x00)
             {
                 msg = new ScopeParametersMessage(frame);
@@ -47,7 +47,7 @@ namespace DidiWebSocketTest.Models
             }
             OnMessage?.Invoke(sender, msg);
         }
-        public void SendMessage(MessageBase message)
+        public void SendMessage(IMessage message)
         {
             transport.Connect(this);
             //transport.SendMessage(message);

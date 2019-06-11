@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace DidiWebSocketTest.Models.Messages
 {
-    public class ScopeBufferMessage : MessageBase
+    public class ScopeBufferMessage : WebSocketMessageBase
     {
         public int ChannelCount
         {
@@ -13,53 +13,53 @@ namespace DidiWebSocketTest.Models.Messages
         }
         public int SampleCount { get; set; }
         public float[] Data { get; set; }
-        public float[] Time { get; set; }
         public ScopeBufferMessage(byte[] frame) : base(frame)
         {
-            byte[] data = frame.Skip(frame[0]).ToArray();
-            SampleCount = data.Length / (4* (ChannelCount + 1));
+            byte[] frameData = frame.Skip(frame[0]).ToArray();
+            SampleCount = frameData.Length / (4* (ChannelCount + 1));
             if (header[2] == 0x02)
             {
-                ScopeFullBufferDataStructure ds = BytesToStruct<ScopeFullBufferDataStructure>(ref data, data.Length);
-                int arraySize = (ChannelCount + 1) * (ds.data.Length / (ChannelCount + 1));
-                var dataArray = ds.data.Take(arraySize).ToArray();
-                var tmp = dataArray.Where((x, i) => i % (ChannelCount + 1) == 0).ToArray();
-                var max = tmp.Min();
-                var index = Array.IndexOf(tmp,max);
-                Data = dataArray.Skip(index * (ChannelCount + 1)).ToArray();
-                Data = Data.Concat(dataArray.Take(index * (ChannelCount + 1))).ToArray();
+                ScopeFullBufferDataStructure ds = BytesToStruct<ScopeFullBufferDataStructure>(ref frameData, frameData.Length);
+                ResizeSortByTimeStampAndSetData(ds);
             }
             if (header[2] == 0x03)
             {
-                ScopeHalfBufferDataStructure ds = BytesToStruct<ScopeHalfBufferDataStructure>(ref data, data.Length);
-                Data = ds.data;
+                ScopeHalfBufferDataStructure ds = BytesToStruct<ScopeHalfBufferDataStructure>(ref frameData, frameData.Length);
+                ResizeSortByTimeStampAndSetData(ds);
             }
             MessageBytes = frame;
         }
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal class ScopeFullBufferDataStructure
+
+        private void ResizeSortByTimeStampAndSetData(IBufferDataStructure ds)
         {
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8 * 1024)]
-            public float[] data;
+            int validDataArraySize = (ChannelCount + 1) * (ds.CircularBuffer.Length / (ChannelCount + 1));
+            var validDataArray = ds.CircularBuffer.Take(validDataArraySize).ToArray();
+            var tmp = validDataArray.Where((x, i) => i % (ChannelCount + 1) == 0).ToArray();
+            var minTimeStamp = tmp.Min();
+            var index = Array.IndexOf(tmp, minTimeStamp);
+            Data = validDataArray.Skip(index * (ChannelCount + 1)).ToArray();
+            Data = Data.Concat(validDataArray.Take(index * (ChannelCount + 1))).ToArray();
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
-        internal class ScopeHalfBufferDataStructure
+        internal class ScopeFullBufferDataStructure : IBufferDataStructure
+        {
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8 * 1024)]
+            public float[] circularBuffer;
+            public float[] CircularBuffer { get { return circularBuffer; } }
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Ansi)]
+        internal class ScopeHalfBufferDataStructure : IBufferDataStructure
         {
             [Endian(Endianness.BigEndian)]
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4 * 1024)]
-            public float[] data;
+            public float[] circularBuffer;
+            public float[] CircularBuffer { get { return circularBuffer; } }
         }
-    }
-    public class Entry : IComparable
-    {
-        public float Time { get; set; }
-        public float[] Data { get; set; }
-
-        public int CompareTo(object obj)
+        internal interface IBufferDataStructure
         {
-            return ((Entry)obj).Time.CompareTo(Time);
-            return Time.CompareTo(((Entry)obj).Time);
+            float[] CircularBuffer { get; }
         }
     }
 }

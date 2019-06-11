@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DidiWebSocketTest.Interfaces;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,40 +10,13 @@ using System.Text;
 
 namespace DidiWebSocketTest.Models.Messages
 {
-    // Header bytes
-    // 0 - Data Offset (header size: normally = 4)
-    // 1 - Version (=1)
-    // 2 - Message Type
-    // 3 - Reserved
-
-    // Response Message Types
-    // 0 - GET SCOPE PARAMS
-    // 1 - GET CONFIG PARAMS
-    // 2 - SEND FULL BUFFER
-    // 3 - SEND FULL BUFFER
-    public abstract class MessageBase
+    public abstract class MessageBase : IMessage
     {
-        // Header bytes
-        // 0 - Data Offset (header size: normally = 4)
-        // 1 - Version (=1)
-        // 2 - Message Type
-        // 3 - Reserved
-        const int headerLength = 0x04;
-        const int version = 0x01;
-        protected byte[] header = new byte[4] { headerLength, version, 0x00, 0x00 };
-        public string Message { get; protected set; }
         public byte[] MessageBytes { get; protected set; }
-        public MessageType MessageType
-        {
-            get { return (MessageType)header[2]; }
-        }
+
         public MessageBase()
-        {
-        }
-        public MessageBase(byte[] frame)
-        {
-            header = frame.Take(headerLength).ToArray();
-        }
+        {}
+
         protected IEnumerable<byte> GetBytesFromString(string stringProperty, int stringPropertyRequestedSize)
         {
             List<byte> bytes = Encoding.ASCII.GetBytes(stringProperty).ToList();

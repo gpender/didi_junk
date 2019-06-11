@@ -10,6 +10,7 @@ namespace DidiWebSocketTest.Interfaces
         event EventHandler<string> OnError;
         void Connect(IProtocol protocol);
         void Close();
-        void SendMessage(MessageBase message);
+        void SendMessage(IMessage message);
+        void SendRequestResponseMessage(IMessage requestMessage);
     }
 }

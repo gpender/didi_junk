@@ -1,5 +1,4 @@
 ﻿using DidiWebSocketTest.Interfaces;
-using DidiWebSocketTest.Models.Messages;
 using System;
 using WebSocketSharp;
 
@@ -56,7 +55,7 @@ namespace DidiWebSocketTest.Models
         {
             OnInfo?.Invoke(sender, "WebSocket Opened");
         }
-        public void SendMessage(MessageBase message)
+        public void SendMessage(IMessage message)
         {
             if (ws != null && ws.ReadyState == WebSocketState.Open)
             {
@@ -66,6 +65,10 @@ namespace DidiWebSocketTest.Models
             {
                 OnInfo?.Invoke(this, "Cannot send message, WebSocket not Open");
             }
+        }
+        public void SendRequestResponseMessage(IMessage requestMessage)
+        {
+            throw new NotImplementedException();
         }
     }
 }

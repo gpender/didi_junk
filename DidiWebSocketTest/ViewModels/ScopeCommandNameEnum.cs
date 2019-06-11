@@ -4,6 +4,7 @@
     {
         START,
         STOP,
-        PAUSE
+        PAUSE,
+        GETMENUS
     }
 }

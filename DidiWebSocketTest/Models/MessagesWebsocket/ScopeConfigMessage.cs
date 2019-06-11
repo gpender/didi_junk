@@ -8,7 +8,7 @@ using System.Text;
 
 namespace DidiWebSocketTest.Models.Messages
 {
-    public class ScopeConfigMessage : MessageBase
+    public class ScopeConfigMessage : WebSocketMessageBase
     {
         public ScopeConfigMessage()
         {

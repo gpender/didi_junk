@@ -8,7 +8,7 @@ using System.Text;
 
 namespace DidiWebSocketTest.Models.Messages
 {
-    public class HelloMessage : MessageBase
+    public class HelloMessage : WebSocketMessageBase
     {
         public HelloMessage()
         {

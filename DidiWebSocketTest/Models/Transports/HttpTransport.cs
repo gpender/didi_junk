@@ -2,7 +2,9 @@
 using DidiWebSocketTest.Models.Messages;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using WebSocketSharp;
@@ -11,69 +13,6 @@ namespace DidiWebSocketTest.Models
 {
     public class HttpTransport : ITransport
     {
-        //public event EventHandler<string> OnInfo;
-        //public event EventHandler<byte[]> OnMessage;
-        //public event EventHandler<string> OnError;
-        //WebSocket ws = null;
-
-        //public HttpTransport()
-        //{
-
-        //}
-
-        //public void Close()
-        //{
-        //    if (ws != null) ws.Close();
-        //}
-
-        //public void Connect(IProtocol protocol)
-        //{
-        //    if (ws != null && ws.ReadyState == WebSocketState.Open) return;
-        //    ws = new WebSocket(protocol.Url, protocol.Protocol);
-        //    ws.OnOpen += Ws_OnOpen;
-        //    ws.OnClose += Ws_OnClose;
-        //    ws.OnMessage += Ws_OnMessage;
-        //    ws.OnError += Ws_OnError;
-        //    ws.Connect();
-        //}
-        //private void Ws_OnError(object sender, ErrorEventArgs e)
-        //{
-        //    OnError?.Invoke(sender, e.Message);
-        //}
-
-        //private void Ws_OnMessage(object sender, MessageEventArgs e)
-        //{
-        //    if (e.IsBinary)
-        //    {
-        //        OnMessage?.Invoke(sender, e.RawData);
-        //    }
-        //    else
-        //    {
-        //        OnInfo?.Invoke(sender, e.Data);
-        //    }
-        //}
-
-        //private void Ws_OnClose(object sender, CloseEventArgs e)
-        //{
-        //    OnInfo?.Invoke(sender, "WebSocket Closed");
-        //    ws.OnOpen -= Ws_OnOpen;
-        //    ws.OnClose -= Ws_OnClose;
-        //    ws.OnMessage -= Ws_OnMessage;
-        //    ws.OnError -= Ws_OnError;
-        //}
-
-        //private void Ws_OnOpen(object sender, EventArgs e)
-        //{
-        //    OnInfo?.Invoke(sender, "WebSocket Opened");
-        //}
-        //public void SendMessage(string message)
-        //{
-        //    if (ws != null) ws.Send(message);
-        //}
-        //public void SendMessage(MessageBase message)
-        //{
-        //    if (ws != null) ws.Send(message.MessageBytes);
-        //}
         public event EventHandler<byte[]> OnMessage;
         public event EventHandler<string> OnInfo;
         public event EventHandler<string> OnError;
@@ -92,10 +31,53 @@ namespace DidiWebSocketTest.Models
         {
             throw new NotImplementedException();
         }
+        public void SendRequestResponseMessage(IMessage requestMessage)
+        {
+            IHttpMessage httpMessage = requestMessage as IHttpMessage;
+            if(httpMessage != null)
+            {
+                try
+                {
+                    HttpWebRequest request = CreateGetRequest(new Uri(httpMessage.RequestUrl));
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    {
+                        Stream dataStream = response.GetResponseStream();
+                        BinaryReader breader = new BinaryReader(dataStream);
+                        httpMessage.SetResponseBytes(ReadAllBytes(breader));
+                    }
+                }
+                catch(Exception e)
+                {
+                    OnError(this, e.Message);
+                }
+            }
+        }
 
-        public void SendMessage(MessageBase message)
+        public void SendMessage(IMessage message)
         {
             throw new NotImplementedException();
+        }
+
+        HttpWebRequest CreateGetRequest(Uri uri)
+        {
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(uri);
+            request.Method = "GET";
+            //request.KeepAlive = false;
+            request.Timeout = 2000;
+            request.Proxy = null;
+            return request;
+        }
+        public byte[] ReadAllBytes(BinaryReader reader)
+        {
+            const int bufferSize = 4096;
+            using (var ms = new MemoryStream())
+            {
+                byte[] buffer = new byte[bufferSize];
+                int count;
+                while ((count = reader.Read(buffer, 0, buffer.Length)) != 0)
+                    ms.Write(buffer, 0, count);
+                return ms.ToArray();
+            }
         }
     }
 }
