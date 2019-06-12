@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="DidiWebSocketTest.Views.DriveScanUC"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:attachedCmd="clr-namespace:AC30Scope.AttachedBehaviours"
+             xmlns:vm="clr-namespace:DidiWebSocketTest.ViewModels"
+             xmlns:local="clr-namespace:DidiWebSocketTest.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="/DidiWebSocketTest;component/Resources/Converters.xaml"/>
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="26"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <CheckBox Margin="0" VerticalAlignment="Center" IsChecked="{Binding ScanSubNet,Mode=TwoWay}" FlowDirection="RightToLeft" ToolTip="Add a Subnet IP address to scan">
+                <Image Height="24" Source="/DidiWebSocketTest;component/Resources/Images/nic.bmp" Stretch="Fill" Width="22"/>
+            </CheckBox>
+            <TextBox Margin="5,3" MinWidth="70" Text="{Binding SubNetToScan,FallbackValue=192.168.1.50}" Visibility="{Binding ScanSubNet,Converter={StaticResource VisibleIfTrue}}" VerticalAlignment="Center"/>
+        </StackPanel>
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="16" Grid.Column="1">Drives Found</TextBlock>
+
+        <Button Style="{DynamicResource ImageButtonStyle}" Command="{Binding DriveScanCommand}" CommandParameter="{x:Static vm:DriveScanCommandName.FIND}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Padding="2">
+            <Image Height="22" Source="/DidiWebSocketTest;component/Resources/Images/scan.png" Stretch="Fill" Width="22" />
+        </Button>
+        <ListView ItemsSource="{Binding DriveList}" SelectedItem="{Binding SelectedDrive}" VerticalAlignment="Stretch" SelectionMode="Single"
+                          ScrollViewer.CanContentScroll="False" Grid.Row="1">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="attachedCmd:DoubleClickBehaviour.DoubleClick" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}, Path=DataContext.AddScopeCommand}"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Width="135" DisplayMemberBinding="{Binding DriveName}">
+                            <GridViewColumn.Header>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock>Drive</TextBlock>
+                                    <Image Source="/DidiWebSocketTest;component/Resources/Images/ac30x_2.ico" Height="20" Width="20"></Image>
+                                </StackPanel>
+                            </GridViewColumn.Header>
+                        </GridViewColumn>
+
+                        <GridViewColumn Header="Type" Width="70" DisplayMemberBinding="{Binding DriveType}"/>
+                        <GridViewColumn Header="FW" Width="55" DisplayMemberBinding="{Binding Firmware}"/>
+                        <GridViewColumn Header="IP Address" Width="100" DisplayMemberBinding="{Binding IpAddress}"/>
+                        <GridViewColumn Width="Auto">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Style="{DynamicResource ImageButtonStyle}" Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListView}}, Path=DataContext.DriveScanCommand}" CommandParameter="{x:Static vm:DriveScanCommandName.WINK}" Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListViewItem}},Path=IsSelected,Converter={StaticResource VisibleIfTrue}}" ToolTip="Make GKP LCD Flash">
+                                        <Image Height="16" Source="/DidiWebSocketTest;component/Resources/Images/wink.png" Stretch="Fill" Width="16" />
+                                    </Button>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Grid Grid.Row="2" Visibility="{Binding DriveNotSelected,Converter={StaticResource VisibleIfNotTrue}}">
+            <StackPanel Visibility="{Binding SelectedDrive.FileBrowserSupport, Converter={StaticResource VisibleIfNotTrue}}" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock FontSize="16">This FW does not support Drive Scope.</TextBlock>
+                <TextBlock FontSize="16">Requires AC30V FW1.12 or AC30P/AC30D FW2.12</TextBlock>
+            </StackPanel>
+            <Grid Visibility="{Binding SelectedDrive.FileBrowserSupport, Converter={StaticResource VisibleIfTrue}}">
+                <!--<TextBlock Visibility="{Binding SelectedDrive.FileBrowserSupport, Converter={StaticResource VisibleIfTrue}}" FontSize="16">This FW does not support Drive Scope.</TextBlock>-->
+                <Button Margin="10,5" Height="35" Width="150" HorizontalAlignment="Center" Style="{DynamicResource ImageButtonStyle}" Command="{Binding DriveScanCommand}" CommandParameter="{x:Static vm:DriveScanCommandName.ADDSCOPE}" VerticalAlignment="Center" ToolTip="Add Scope for this Drive">
+                    <TextBlock Margin="5,0" Text="Add Drive Scope" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+
+</UserControl>

@@ -15,6 +15,9 @@
             <TabItem Header="Scope Protocol">
                 <view:WsScopeView DataContext="{Binding ScopeProtocolVM}"/>
             </TabItem>
+            <TabItem Header="Drive Scan">
+                <view:DriveScanUC DataContext="{Binding DriveScanVM}"/>
+            </TabItem>
             <TabItem Header="Scope">
                 <view:ScopeUC DataContext="{Binding ScopeVM}"/>
             </TabItem>

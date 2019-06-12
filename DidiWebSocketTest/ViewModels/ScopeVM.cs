@@ -23,7 +23,7 @@ namespace DidiWebSocketTest.ViewModels
     {
         RelayCommand<ScopeCommandName> scopeCommand;
         IScope scope;
-
+        ScopeStatus ScopeStatus = ScopeStatus.STOPPED;
         string message ="";
         //public int ChannelCount
         //{
@@ -85,6 +85,15 @@ namespace DidiWebSocketTest.ViewModels
         }
         bool CanExecuteScopeCommand(ScopeCommandName messageType)
         {
+            switch (messageType)
+            {
+                case ScopeCommandName.START:
+                    return ScopeStatus != ScopeStatus.STARTED;
+                case ScopeCommandName.STOP:
+                    return ScopeStatus != ScopeStatus.STOPPED;
+                case ScopeCommandName.PAUSE:
+                    return ScopeStatus == ScopeStatus.STARTED;
+            }
             return true;
         }
         void ExecuteScopeCommand(ScopeCommandName messageType)
@@ -93,12 +102,15 @@ namespace DidiWebSocketTest.ViewModels
             {
                 case ScopeCommandName.START:
                     scope.Start();
+                    ScopeStatus = ScopeStatus.STARTED;
                     break;
                 case ScopeCommandName.STOP:
                     scope.Stop();
+                    ScopeStatus = ScopeStatus.STOPPED;
                     break;
                 case ScopeCommandName.PAUSE:
                     scope.Pause();
+                    ScopeStatus = ScopeStatus.PAUSED;
                     break;
                 case ScopeCommandName.GETMENUS:
                     parameterProtocol.GetMenus();
@@ -107,4 +119,11 @@ namespace DidiWebSocketTest.ViewModels
         }
         #endregion
     }
+    enum ScopeStatus
+    {
+        STOPPED,
+        STARTED,
+        PAUSED
+    }
+
 }

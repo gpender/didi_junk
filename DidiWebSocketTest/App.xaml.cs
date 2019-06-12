@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows;
 using DidiWebSocketTest.Interfaces;
 using DidiWebSocketTest.Models;
 using DidiWebSocketTest.ViewModels;
 using Microsoft.Practices.Unity;
+using Parker.DctEthernetComms;
+using Parker.DctEthernetComms.DriveScan;
+using Parker.DctEthernetComms.Interfaces;
 
 namespace DidiWebSocketTest
 {
@@ -75,11 +79,14 @@ namespace DidiWebSocketTest
                 container.RegisterType<ITransport, WebSocketTransport>("WebSocketTransport", new ContainerControlledLifetimeManager());
                 container.RegisterType<ITransport, HttpTransport>("HttpTransport", new ContainerControlledLifetimeManager());
 
+                container.RegisterType<IDriveBrowser3, DriveBrowser>();
+
                 container.RegisterType<IScope, Scope>(new ContainerControlledLifetimeManager());
                 container.RegisterType<IUtilityServices, UtilityServices>(new ContainerControlledLifetimeManager());
                 container.RegisterType<WsScopeProtocolVM>();
                 container.RegisterType<ScopeVM>();
                 container.RegisterType<WsTestProtocolVM>();
+                container.RegisterType<DriveScanVM>();
             }
             return container;
         }
