@@ -3,12 +3,55 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:telerik="http://schemas.telerik.com/2008/xaml/presentation"
         xmlns:view="clr-namespace:DidiWebSocketTest.Views"
         xmlns:local="clr-namespace:DidiWebSocketTest"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <TabControl>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <telerik:RadMenu ClickToOpen="True">
+            <telerik:RadMenuItem Header="_File">
+                <telerik:RadMenuItem  Header="_Open">
+                    <telerik:RadMenuItem.Icon>
+                        <Image Source="../Images/menu/File_Open.png" />
+                    </telerik:RadMenuItem.Icon>
+                </telerik:RadMenuItem>
+                <telerik:RadMenuItem  Header="_Save">
+                    <!--<telerik:RadMenuItem.Icon>
+                        <Image Source="../Images/menu/File_Save.png" />
+                    </telerik:RadMenuItem.Icon>-->
+                </telerik:RadMenuItem>
+                <telerik:RadMenuItem  Header="Save _As"/>
+                <telerik:RadMenuSeparatorItem />
+                <telerik:RadMenuItem  Header="_Print">
+                    <!--<telerik:RadMenuItem.Icon>
+                        <Image Source="../Images/menu/File_Print.png" />
+                    </telerik:RadMenuItem.Icon>-->
+                </telerik:RadMenuItem>
+                <telerik:RadMenuItem  Header="P_rint Preview"/>
+                <telerik:RadMenuSeparatorItem />
+                <telerik:RadMenuItem  Header="_Export to BMP">
+                    <!--<telerik:RadMenuItem.Icon>
+                        <Image Source="../Images/menu/File_Send.png" />
+                    </telerik:RadMenuItem.Icon>-->
+                </telerik:RadMenuItem>
+                <telerik:RadMenuItem  Header="_Export to BMP">
+                    <!--<telerik:RadMenuItem.Icon>
+                        <Image Source="../Images/menu/File_Send.png" />
+                    </telerik:RadMenuItem.Icon>-->
+                </telerik:RadMenuItem>
+                <telerik:RadMenuItem  Header="E_xit">
+                    <!--<telerik:RadMenuItem.Icon>
+                        <Image Source="../Images/menu/File_Exit.png" />
+                    </telerik:RadMenuItem.Icon>-->
+                </telerik:RadMenuItem>
+            </telerik:RadMenuItem>
+        </telerik:RadMenu>
+    <TabControl Grid.Row="1">
             <TabItem Header="Test Protocol">
                 <view:WsTestProtocolView DataContext="{Binding TestProtocolVM}"/>
             </TabItem>

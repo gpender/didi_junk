@@ -1,7 +1,7 @@
 ﻿using DidiWebSocketTest.Commands;
 using Parker.DctEthernetComms;
 using Parker.DctEthernetComms.Interfaces;
-using Parker.DctEthernetComms.Messages;
+using Parker.DctEthernetComms.DCT.Messages;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
@@ -13,9 +13,6 @@ namespace DidiWebSocketTest.ViewModels
     {
         RelayCommand<DriveScanCommandName> driveScanCommand;
         IDriveBrowser3 driveBrowser;
-
-        ObservableCollection<Parker.DctEthernetComms.Messages.ResponseMessage> messages = new ObservableCollection<Parker.DctEthernetComms.Messages.ResponseMessage>();
-
         public ICollectionView DriveList
         {
             get
@@ -44,14 +41,6 @@ namespace DidiWebSocketTest.ViewModels
         private void DriveBrowser_OnDriveSelected(object sender, System.EventArgs e)
         {
             //throw new System.NotImplementedException();
-        }
-
-        private void ParkerUdpClient_UdpMessageReceived(object sender, MessageReceivedEventArgs e)
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                messages.Add(e.DeviceUdpReply);
-            });
         }
 
         #region Commands

@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using System.Windows;
+﻿//using DidiWebSocketTest.Interfaces;
+//using DidiWebSocketTest.Models;
 using DidiWebSocketTest.Interfaces;
 using DidiWebSocketTest.Models;
 using DidiWebSocketTest.ViewModels;
 using Microsoft.Practices.Unity;
-using Parker.DctEthernetComms;
-using Parker.DctEthernetComms.DriveScan;
+using Parker.DctEthernetComms.DCT;
 using Parker.DctEthernetComms.Interfaces;
+using System.Windows;
 
 namespace DidiWebSocketTest
 {
@@ -43,6 +37,11 @@ namespace DidiWebSocketTest
             var mainVM = container.Resolve<MainVM>();
             var window = new MainWindow { DataContext = mainVM };
             window.Show();
+        }
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            container.Dispose();
         }
     }
     public class UnityContainerProvider
@@ -79,7 +78,7 @@ namespace DidiWebSocketTest
                 container.RegisterType<ITransport, WebSocketTransport>("WebSocketTransport", new ContainerControlledLifetimeManager());
                 container.RegisterType<ITransport, HttpTransport>("HttpTransport", new ContainerControlledLifetimeManager());
 
-                container.RegisterType<IDriveBrowser3, DriveBrowser>();
+                container.RegisterType<IDriveBrowser3, DriveBrowser>(new ContainerControlledLifetimeManager()); // This must be disposed to release Unmanaged Network resources
 
                 container.RegisterType<IScope, Scope>(new ContainerControlledLifetimeManager());
                 container.RegisterType<IUtilityServices, UtilityServices>(new ContainerControlledLifetimeManager());

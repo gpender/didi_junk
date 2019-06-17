@@ -30,7 +30,7 @@
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>junk.htm</WebPage>
     <TrustUrlParameters>true</TrustUrlParameters>
-    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <ExcludeDeploymentUrl>true</ExcludeDeploymentUrl>
@@ -71,6 +71,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Practices.Unity, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Cquential.Microsoft.Practices.Unity.2.0.414\lib\net35\Microsoft.Practices.Unity.dll</HintPath>
     </Reference>
     <Reference Include="Parker.EthernetComms, Version=2.5.0.0, Culture=neutral, processorArchitecture=MSIL">
